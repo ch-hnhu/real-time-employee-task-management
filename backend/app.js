@@ -11,7 +11,7 @@ app.get("/", (_, res) => {
 	res.send("hello world");
 });
 
-app.use("/users", usersApi);
+app.use(usersApi);
 
 app.listen(port, () => {
 	console.log(`Server is running on http://localhost:${port}`);
