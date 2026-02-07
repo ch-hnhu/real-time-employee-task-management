@@ -1,5 +1,6 @@
 import { database } from "../config/firebase.config.js";
-import { ref, set, get, child } from "firebase/database";
+import { ref, set, get, child, push } from "firebase/database";
+import { getOwnerByPhone } from "../helpers/owner.helper.js";
 
 const dbRef = ref(database);
 
@@ -31,50 +32,35 @@ const getOwner = async () => {
 	}
 };
 
-const getOwnerByPhone = async (phone) => {
+const CreateNewAccessCode = async ({ phoneNumber }) => {
 	try {
-		const owner = await get(child(dbRef, `owners/${phone}`));
-		if (owner.exists()) {
-			return {
-				success: true,
-				message: "Owner found",
-				data: owner,
-				error: null,
-			};
+		let data = {};
+		const accessCode = Math.floor(100000 + Math.random() * 900000).toString();
+		const existingOwnerId = await getOwnerByPhone(phoneNumber);
+
+		if (existingOwnerId) {
+			await set(child(dbRef, `owners/${existingOwnerId}`), {
+				phoneNumber: phoneNumber,
+				accessCode: accessCode,
+			});
+
+			data = await get(child(dbRef, `owners/${existingOwnerId}`));
 		} else {
-			return {
-				success: false,
-				message: "Owner not found",
-				data: null,
-				error: null,
-			};
+			const newOwnerRef = push(child(dbRef, "owners"));
+
+			await set(newOwnerRef, {
+				phoneNumber: phoneNumber,
+				accessCode: accessCode,
+			});
+
+			data = await get(newOwnerRef);
 		}
-	} catch (error) {
-		return {
-			success: false,
-			message: "Error getting owner by phone",
-			data: null,
-			error: error.message,
-		};
-	}
-};
 
-const createOwner = async (owner) => {
-	try {
-		const newOwnerRef = ref(database, `owners/${owner.phone}`);
-
-		await set(newOwnerRef, {
-			name: owner.name,
-			access_code: owner.access_code,
-		});
-
-		const ownerCreated = await get(newOwnerRef);
-
-		if (ownerCreated.exists()) {
+		if (data.exists()) {
 			return {
 				success: true,
 				message: "Owner created successfully",
-				data: ownerCreated,
+				data: data.val(),
 				error: null,
 			};
 		} else {
@@ -95,4 +81,40 @@ const createOwner = async (owner) => {
 	}
 };
 
-export { getOwner, getOwnerByPhone, createOwner };
+const ValidateAccessCode = async ({ accessCode, phoneNumber }) => {
+	try {
+		const ownerId = await getOwnerByPhone(phoneNumber);
+
+		if (ownerId) {
+			let owner = await get(child(dbRef, `owners/${ownerId}`));
+
+			if (owner.exists() && owner.val().accessCode === accessCode) {
+				await set(child(dbRef, `owners/${ownerId}/accessCode`), "");
+				owner = await get(child(dbRef, `owners/${ownerId}`));
+
+				return {
+					success: true,
+					message: "Access code is valid",
+					data: owner.val(),
+					error: null,
+				};
+			} else {
+				return {
+					success: false,
+					message: "Invalid access code",
+					data: null,
+					error: null,
+				};
+			}
+		}
+	} catch (error) {
+		return {
+			success: false,
+			message: "Error validating access code",
+			data: null,
+			error: error.message,
+		};
+	}
+};
+
+export { getOwner, CreateNewAccessCode, ValidateAccessCode };

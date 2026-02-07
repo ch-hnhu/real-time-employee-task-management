@@ -1,5 +1,5 @@
 import express from "express";
-import { getOwner, getOwnerByPhone, createOwner } from "../services/owner.service.js";
+import { getOwner, CreateNewAccessCode, ValidateAccessCode } from "../services/owner.service.js";
 
 const router = express.Router();
 
@@ -8,16 +8,15 @@ router.get("/owner", async (_, res) => {
 	res.json(result);
 });
 
-router.get("/owner/:phone", async (req, res) => {
-	const phone = req.params.phone;
-	const result = await getOwnerByPhone(phone);
+router.post("/owner/create-new-access-code", async (req, res) => {
+	const { phoneNumber } = req.body;
+	const result = await CreateNewAccessCode({ phoneNumber });
 	res.json(result);
 });
 
-router.post("/owner", async (req, res) => {
-	const owner = req.body;
-	console.log("owner", owner);
-	const result = await createOwner(owner);
+router.post("/owner/validate-access-code", async (req, res) => {
+	const { phoneNumber, accessCode } = req.body;
+	const result = await ValidateAccessCode({ phoneNumber, accessCode });
 	res.json(result);
 });
 
