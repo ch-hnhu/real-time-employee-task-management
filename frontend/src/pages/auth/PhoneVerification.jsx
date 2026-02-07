@@ -11,9 +11,13 @@ export default function PhoneVerification() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const result = await ValidateAccessCode({ phoneNumber, accessCode: code });
-		if (result.success) {
-			navigate("/dashboard");
+		try {
+			const result = await ValidateAccessCode({ phoneNumber, accessCode: code });
+			if (result.success) {
+				navigate("/dashboard");
+			}
+		} catch (error) {
+			console.error("Error during code validation:", error);
 		}
 	};
 	return (

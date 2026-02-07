@@ -1,6 +1,7 @@
 import { database } from "../config/firebase.config.js";
 import { ref, set, get, child, push } from "firebase/database";
 import { getOwnerByPhone } from "../helpers/owner.helper.js";
+import { sendSMS } from "./twilio.service.js";
 
 const dbRef = ref(database);
 
@@ -57,6 +58,9 @@ const CreateNewAccessCode = async ({ phoneNumber }) => {
 		}
 
 		if (data.exists()) {
+			const message = `Your access code is: ${accessCode}`;
+			console.log("Sending SMS to", phoneNumber, "with message:", message);
+			await sendSMS({ to: phoneNumber, message });
 			return {
 				success: true,
 				message: "Owner created successfully",

@@ -11,7 +11,6 @@ export default function SignIn() {
 		const result = await CreateNewAccessCode({ phoneNumber });
 		console.log(result);
 		if (result.success) {
-			alert(`Access code: ${result.data.accessCode}`);
 			navigate("/phone-verification", { state: { phoneNumber } });
 		}
 	};
