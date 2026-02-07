@@ -5,13 +5,13 @@ import { sendSMS } from "./twilio.service.js";
 
 const dbRef = ref(database);
 
-const getOwner = async () => {
+const GetOwnerList = async () => {
 	const owners = await get(child(dbRef, `owners`));
 	try {
 		if (owners.exists()) {
 			return {
 				success: true,
-				message: "Get owner list successfully",
+				message: "Owner list retrieved successfully",
 				data: owners,
 				error: null,
 			};
@@ -121,4 +121,4 @@ const ValidateAccessCode = async ({ accessCode, phoneNumber }) => {
 	}
 };
 
-export { getOwner, CreateNewAccessCode, ValidateAccessCode };
+export { GetOwnerList, CreateNewAccessCode, ValidateAccessCode };

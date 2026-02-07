@@ -1,11 +1,15 @@
 import express from "express";
-import { getOwner, CreateNewAccessCode, ValidateAccessCode } from "../services/owner.service.js";
+import {
+	GetOwnerList,
+	CreateNewAccessCode,
+	ValidateAccessCode,
+} from "../services/owner.service.js";
 import { sendSMS } from "../services/twilio.service.js";
 
 const router = express.Router();
 
 router.get("/owner", async (_, res) => {
-	const result = await getOwner();
+	const result = await GetOwnerList();
 	res.json(result);
 });
 
