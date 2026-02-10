@@ -1,18 +1,28 @@
-import { database } from "../config/firebase.config.js";
-import { ref, set, get, child, push } from "firebase/database";
+import { database, auth } from "../config/firebase.config.js";
+import {
+	ref,
+	set,
+	get,
+	child,
+	push,
+	query,
+	orderByChild,
+	equalTo,
+	onValue,
+} from "firebase/database";
 import { getOwnerByPhone } from "../helpers/owner.helper.js";
 import { sendSMS } from "./twilio.service.js";
 
 const dbRef = ref(database);
 
 const GetOwnerList = async () => {
-	const owners = await get(child(dbRef, `owners`));
 	try {
+		const owners = await get(child(dbRef, `owners`));
 		if (owners.exists()) {
 			return {
 				success: true,
 				message: "Owner list retrieved successfully",
-				data: owners,
+				data: owners.val(),
 				error: null,
 			};
 		} else {
@@ -121,4 +131,47 @@ const ValidateAccessCode = async ({ accessCode, phoneNumber }) => {
 	}
 };
 
-export { GetOwnerList, CreateNewAccessCode, ValidateAccessCode };
+const GetEmployeeList = async ({ ownerPhoneNumber }) => {
+	try {
+		const ownerId = await getOwnerByPhone(ownerPhoneNumber);
+
+		if (!ownerId) {
+			return {
+				success: false,
+				message: "Owner not found",
+				data: null,
+				error: null,
+			};
+		}
+
+		const employeesRef = ref(database, "employees");
+		const employeesQuery = query(employeesRef, orderByChild("ownerId"), equalTo(ownerId));
+
+		const snapshot = await get(employeesQuery);
+
+		if (snapshot.exists()) {
+			return {
+				success: true,
+				message: "Employee list retrieved successfully",
+				data: snapshot.val(),
+				error: null,
+			};
+		} else {
+			return {
+				success: true,
+				message: "No employees found for this owner",
+				data: {},
+				error: null,
+			};
+		}
+	} catch (error) {
+		return {
+			success: false,
+			message: "Error getting employee list",
+			data: null,
+			error: error.message,
+		};
+	}
+};
+
+export { GetOwnerList, CreateNewAccessCode, ValidateAccessCode, GetEmployeeList };

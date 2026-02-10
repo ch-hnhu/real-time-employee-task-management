@@ -14,6 +14,7 @@ export default function PhoneVerification() {
 		try {
 			const result = await ValidateAccessCode({ phoneNumber, accessCode: code });
 			if (result.success) {
+				localStorage.setItem("ownerPhoneNumber", result.data.phoneNumber);
 				navigate("/dashboard");
 			}
 		} catch (error) {

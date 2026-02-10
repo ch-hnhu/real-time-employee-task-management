@@ -3,6 +3,7 @@ import {
 	GetOwnerList,
 	CreateNewAccessCode,
 	ValidateAccessCode,
+	GetEmployeeList,
 } from "../services/owner.service.js";
 import { sendSMS } from "../services/twilio.service.js";
 
@@ -28,6 +29,12 @@ router.post("/owner/validate-access-code", async (req, res) => {
 router.post("/send-sms", async (req, res) => {
 	const { to, message } = req.body;
 	const result = await sendSMS({ to, message });
+	res.json(result);
+});
+
+router.get("/employee", async (req, res) => {
+	const { ownerPhoneNumber } = req.query;
+	const result = await GetEmployeeList({ ownerPhoneNumber });
 	res.json(result);
 });
 

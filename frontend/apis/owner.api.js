@@ -2,8 +2,7 @@ import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4041";
 
-// Get all owners
-export const getOwners = async () => {
+export const GetOwnerList = async () => {
 	try {
 		const response = await axios.get(`${API_BASE_URL}/owner`);
 		return response.data;
@@ -12,21 +11,6 @@ export const getOwners = async () => {
 		return {
 			success: false,
 			message: "Failed to fetch owners",
-			error: error.message,
-		};
-	}
-};
-
-// Get owner by phone
-export const getOwnerByPhone = async (phone) => {
-	try {
-		const response = await axios.get(`${API_BASE_URL}/owner/${phone}`);
-		return response.data;
-	} catch (error) {
-		console.error("Error fetching owner:", error);
-		return {
-			success: false,
-			message: "Failed to fetch owner",
 			error: error.message,
 		};
 	}
@@ -58,6 +42,21 @@ export const ValidateAccessCode = async ({ phoneNumber, accessCode }) => {
 		return {
 			success: false,
 			message: "Failed to validate access code",
+			error: error.message,
+		};
+	}
+};
+
+export const GetEmplyeeList = async ({ ownerPhoneNumber }) => {
+	try {
+		const response = await axios.get(`${API_BASE_URL}/employee`, {
+			params: { ownerPhoneNumber }
+		});
+		return response.data;
+	} catch (error) {
+		return {
+			success: false,
+			message: "Failed to fetch employees",
 			error: error.message,
 		};
 	}
