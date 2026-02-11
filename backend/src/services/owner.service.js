@@ -1,16 +1,6 @@
-import { database, auth } from "../config/firebase.config.js";
-import {
-	ref,
-	set,
-	get,
-	child,
-	push,
-	query,
-	orderByChild,
-	equalTo,
-	onValue,
-} from "firebase/database";
-import { getOwnerByPhone } from "../helpers/owner.helper.js";
+import { database } from "../config/firebase.config.js";
+import { ref, set, get, child, push, query, orderByChild, equalTo } from "firebase/database";
+import { getOwnerByPhone } from "../utils/owner.helper.js";
 import { sendSMS } from "./twilio.service.js";
 
 const dbRef = ref(database);

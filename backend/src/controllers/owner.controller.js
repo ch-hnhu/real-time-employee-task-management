@@ -6,7 +6,7 @@ import {
 } from "../services/owner.service.js";
 import { sendSMS } from "../services/twilio.service.js";
 
-export default class OwnerController {
+export default class ownerController {
 	static async GetOwnerList(_, res) {
 		const result = await GetOwnerList();
 		res.json(result);

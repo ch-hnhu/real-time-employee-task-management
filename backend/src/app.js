@@ -2,10 +2,9 @@ import "dotenv/config";
 import bodyParser from "body-parser";
 import express from "express";
 import cors from "cors";
-import ownerApi from "./routes/owner.route.js";
+import router from "./routes/index.route.js";
 
 const app = express();
-const port = process.env.PORT || 4041;
 
 app.use(
 	cors({
@@ -21,8 +20,6 @@ app.get("/", (_, res) => {
 	res.send("hello world");
 });
 
-app.use(ownerApi);
+app.use("/api", router);
 
-app.listen(port, () => {
-	console.log(`Server is running on http://localhost:${port}`);
-});
+export default app;
