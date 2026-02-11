@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4041";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const GetOwnerList = async () => {
 	try {
-		const response = await axios.get(`${API_BASE_URL}/owner`);
+		const response = await axios.get(`${API_BASE_URL}/api/owner`);
 		return response.data;
 	} catch (error) {
 		console.error("Error fetching owners:", error);
@@ -18,7 +18,7 @@ export const GetOwnerList = async () => {
 
 export const CreateNewAccessCode = async (owner) => {
 	try {
-		const response = await axios.post(`${API_BASE_URL}/owner/create-new-access-code`, owner);
+		const response = await axios.post(`${API_BASE_URL}/api/auth/create-new-access-code`, owner);
 		return response.data;
 	} catch (error) {
 		console.error("Error creating owner:", error);
@@ -32,7 +32,7 @@ export const CreateNewAccessCode = async (owner) => {
 
 export const ValidateAccessCode = async ({ phoneNumber, accessCode }) => {
 	try {
-		const response = await axios.post(`${API_BASE_URL}/owner/validate-access-code`, {
+		const response = await axios.post(`${API_BASE_URL}/api/auth/validate-access-code`, {
 			phoneNumber,
 			accessCode,
 		});
@@ -49,8 +49,8 @@ export const ValidateAccessCode = async ({ phoneNumber, accessCode }) => {
 
 export const GetEmplyeeList = async ({ ownerPhoneNumber }) => {
 	try {
-		const response = await axios.get(`${API_BASE_URL}/employee`, {
-			params: { ownerPhoneNumber }
+		const response = await axios.get(`${API_BASE_URL}/api/employee`, {
+			params: { ownerPhoneNumber },
 		});
 		return response.data;
 	} catch (error) {
